@@ -41,3 +41,21 @@ pub struct Invoice {
     pub category: String,
 }
 impl FindWrapper<Invoice> for Invoice {}
+
+#[derive(Model, Serialize, Deserialize)]
+#[model(index(keys = r#"doc!{"id": 1}"#, options = r#"doc!{"unique": true}"#))]
+pub struct Category {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub name: String,
+}
+impl FindWrapper<Category> for Category {}
+
+#[derive(Model, Serialize, Deserialize)]
+#[model(index(keys = r#"doc!{"id": 1}"#, options = r#"doc!{"unique": true}"#))]
+pub struct BillingType {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<ObjectId>,
+    pub name: String,
+}
+impl FindWrapper<BillingType> for BillingType {}

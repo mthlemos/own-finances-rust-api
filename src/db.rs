@@ -1,4 +1,4 @@
-use crate::models::Invoice;
+use crate::models::*;
 use tokio_compat_02::FutureExt;
 use wither::mongodb::Client;
 use wither::mongodb::Database;
@@ -11,7 +11,8 @@ pub async fn start_db(database_url: &str, database_name: &str) -> Result<Databas
         .await?
         .database(database_name);
     Invoice::sync(&db).compat().await?;
-
+    Category::sync(&db).compat().await?;
+    BillingType::sync(&db).compat().await?;
     let mut inv = Invoice {
         id: None,
         name: "batata".to_string(),
