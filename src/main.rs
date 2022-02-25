@@ -1,9 +1,7 @@
 #[macro_use]
 extern crate rocket;
 use dotenv::dotenv;
-use rocket::Rocket;
 use std::env;
-use wither::mongodb::Database;
 use wither::Result;
 
 mod api_routes;
@@ -22,17 +20,14 @@ async fn main() -> Result<()> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
     let database_name = env::var("DATABASE_NAME").expect("DATABASE_NAME not set");
     // Database connection
-    let db: Database;
-    match db::start_db(&database_url, &database_name).await {
-        Ok(dbConn) => {
-            println!("Db success!");
-            db = dbConn;
-        }
-        Err(err) => panic!("Db could not connect: {}", err),
-    };
+    let db = db::start_db(&database_url, &database_name)
+        .await
+        .expect("Db could not connect");
+    println!("Db success!");
 
+    // Launch web server
     if let Err(e) = rocket::build()
-        .manage(db)
+        .manage(db) // Passing database ref to all routes
         .mount("/api", routes![api_routes::invoice, index])
         .launch()
         .await

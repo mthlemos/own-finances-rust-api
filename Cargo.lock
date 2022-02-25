@@ -1274,6 +1274,7 @@ dependencies = [
 name = "own-finances-api"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "dotenv",
  "futures",
  "rocket",
