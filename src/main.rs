@@ -17,8 +17,8 @@ fn index() -> &'static str {
 async fn main() -> Result<()> {
     // Loading .env variables
     dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
-    let database_name = env::var("DATABASE_NAME").expect("DATABASE_NAME not set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set on .env");
+    let database_name = env::var("DATABASE_NAME").expect("DATABASE_NAME not set on .env");
     // Database connection
     let db = db::start_db(&database_url, &database_name)
         .await
@@ -28,7 +28,23 @@ async fn main() -> Result<()> {
     // Launch web server
     if let Err(e) = rocket::build()
         .manage(db) // Passing database ref to all routes
-        .mount("/api", routes![api_routes::invoice, index])
+        .mount(
+            "/api",
+            routes![
+                api_routes::get_invoice_query_with_date,
+                api_routes::get_invoice_query_without_date,
+                api_routes::add_invoice,
+                api_routes::edit_invoice,
+                api_routes::delete_invoice,
+                api_routes::get_categories,
+                api_routes::add_categories,
+                api_routes::delete_category,
+                api_routes::get_billing_types,
+                api_routes::add_billing_types,
+                api_routes::delete_billing_type,
+                index
+            ],
+        )
         .launch()
         .await
     {
